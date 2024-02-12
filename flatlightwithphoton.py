@@ -101,7 +101,10 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
     scint_layer.clear()
     scint_nPE.clear()
     scint_time.clear()
-
+    scint_row.clear()
+    scint_column.clear()
+    scint_type.clear()
+    #FIXME:row,column,type unfinished
     # make an array of length 1000 to store temporary nPE values
     temp_nPE = [0]*1000
     temp_time = [0]*1000
@@ -160,15 +163,72 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
             scint_copyNo.push_back(int(dataChan))
             if(j == 67):
                 scint_layer.push_back(-1)
+                scint_type.push_back(int(1))
+                scint_row.push_back(int(0))
+                scint_column.push_back(int(0))
             elif(j == 68):
                 scint_layer.push_back(4)
+                scint_type.push_back(int(1))
+                scint_row.push_back(int(0))
+                scint_column.push_back(int(0))
             elif(j == 73 or j == 74 or j == 75):
                 scint_layer.push_back(0)
-            elif(j == 81 or j == 82 or j == 83):
+                scint_type.push_back(int(2))
+                if j == 73:
+                    scint_row.push_back(int(4))
+                    scint_column.push_back(int(0))
+                if j == 74:
+                    scint_row.push_back(int(0))
+                    scint_column.push_back(int(-1))
+                if j == 75:
+                    scint_row.push_back(int(0))
+                    scint_column.push_back(int(4))
+                    
+                    
+            elif(j == 81 or j == 82 or j ==  83):
                 scint_layer.push_back(2)
+                scint_type.push_back(int(2))
+                if j === 81: 
+                    scint_row.push_back(int(4))
+                    scint_column.push_back(int(0))
+                if j == 82:
+                    scint_row.push_back(int(0))
+                    scint_column.push_back(int(-1))
+                else:
+                    scint_column.push_back(int(4)) 
+                    scint_row.push_back(int(0))
             else:
                 scint_layer.push_back(int(j/216))
+                scint_type.push_back(int(0))
+                layerNum = dataChan/16
+                #find the super module number(SMnum)
+                SMnum=int((dataChan-16*(layerNum))/4)
+                barNumber = (dataChan-16*(layerNum))-4*SMnum
+                if SMnum > 1:
+                    if int(barNumber/2) == 1:
+                        scint_row.push_back(int(0))
+                    else:
+                        scint_row.push_back(int(1)) 
+                if SMnumber <=1 :
+                    if int(barNumber/2) == 1:
+                        scint_row.push_back(int(2))
+                    else:
+                        scint_row.push_back(int(3))
+                
+                
+                if (SMnumber % 2 == 0):
+                    if barNumber % 2 == 0:
+                        scint_column.push_back(int(0))
+                    else:
+                        scint_column.push_back(int(1))
+                
+                if (SMnumber % 2 == 1):                   
+                    if barNumber % 2 == 0:
+                        scint_column.push_back(int(2))
+                    else:
+                        scint_column.push_back(int(3))
 
+               
 # Function to create the branches in the new tree for ScintHits
 def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time):
     # Create the branch for the flattened data
@@ -176,6 +236,9 @@ def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, sci
     output_tree.Branch("layer", scint_layer)
     output_tree.Branch("nPE", scint_nPE)
     output_tree.Branch("time", scint_time)
+    output_tree.Branch("row", scint_row)
+    output_tree.Branch("type",scint_type)
+
 
 # Function to create the branches in the new tree for PMTHits
 def create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
@@ -204,7 +267,7 @@ def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
     pmt_copyNo.clear()
     pmt_time.clear()
     pmt_layer.clear()
-
+    pmt_
     # make an array of length 1000 to store temporary nPE values
     temp_nPE = [0]*1000
     temp_time = [0]*1000
@@ -274,6 +337,9 @@ scint_copyNo = ROOT.std.vector('int')()
 scint_layer = ROOT.std.vector('int')()
 scint_nPE = ROOT.std.vector('float')()
 scint_time = ROOT.std.vector('float')()
+scint_type = ROOT.std.vector('int')()
+scint_row = ROOT.std.vector('int')()
+scint_column = ROOT.std.vector('int')()
 
 # PMT variables to hold flattened data
 pmt_nPE = ROOT.std.vector('float')()
