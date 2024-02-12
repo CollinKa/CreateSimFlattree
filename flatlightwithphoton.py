@@ -12,6 +12,9 @@ import array
 import ROOT
 import sys
 import math
+import re
+
+
 
 # Function to convert sim copy number to data copy number for PMTs
 def simToDataPMT(simChannel):
@@ -186,7 +189,7 @@ def create_branches_event(output_tree, event, runNumber):
     output_tree.Branch("event", event,"event/I")
     output_tree.Branch("runNumber", runNumber,"runNumber/I")
 
-def populate_vectors_event(input_tree, event, runNumber):
+def populate_vectors_event(input_tree, event, runNumber, fileNum):
     #eventID.clear()
     #runNumber.clear()
 
@@ -194,7 +197,7 @@ def populate_vectors_event(input_tree, event, runNumber):
     #eventID.push_back(event.GetEventID())
     event[0] = evt.GetEventID()
     #runNumber.push_back(1)
-    runNumber[0] = 1
+    runNumber[0] = fileNum
 
 def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
     pmt_nPE.clear()
@@ -250,6 +253,11 @@ if ROOT.gSystem.Load("/net/cms26/cms26r0/zheng/barSimulation/WithPhotonUpdateSim
 #filename = "/net/cms26/cms26r0/zheng/barSimulation/barWithPhotonUpdate/BARcosmic" + sys.argv[1] + "/MilliQan.root"
 filename = sys.argv[1] + sys.argv[2] + "/MilliQan.root"
 outname = "output_" + sys.argv[2] + ".root"
+
+
+#get the file number
+fileNumber = int(sys.argv[2])
+
 
 input_file = ROOT.TFile(filename, "READ")
 
@@ -307,7 +315,7 @@ for i in range(n_entries):
     input_tree.GetEntry(i)
 
     # Populate the vectors with flattened data
-    populate_vectors_event(input_tree, event, runNumber)
+    populate_vectors_event(input_tree, event, runNumber,fileNumber)
     populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time)
     populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer)
     
