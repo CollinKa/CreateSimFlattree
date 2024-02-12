@@ -8,6 +8,7 @@
 
 ###### Designed to be run over EDep-only data, minimal outputs ######
 
+import array
 import ROOT
 import sys
 import math
@@ -181,17 +182,19 @@ def create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
     output_tree.Branch("pmt_time", pmt_time)
     output_tree.Branch("pmt_layer", pmt_layer)
 
-def create_branches_event(output_tree, eventID, runNumber):
-    output_tree.Branch("eventID", eventID)
-    output_tree.Branch("runNumber", runNumber)
+def create_branches_event(output_tree, event, runNumber):
+    output_tree.Branch("event", event,"event/I")
+    output_tree.Branch("runNumber", runNumber,"runNumber/I")
 
-def populate_vectors_event(input_tree, eventID, runNumber):
-    eventID.clear()
-    runNumber.clear()
+def populate_vectors_event(input_tree, event, runNumber):
+    #eventID.clear()
+    #runNumber.clear()
 
-    event = input_tree.ROOTEvent
-    eventID.push_back(event.GetEventID())
-    runNumber.push_back(1)
+    evt = input_tree.ROOTEvent
+    #eventID.push_back(event.GetEventID())
+    event[0] = evt.GetEventID()
+    #runNumber.push_back(1)
+    runNumber[0] = 1
 
 def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
     pmt_nPE.clear()
@@ -271,8 +274,13 @@ pmt_time = ROOT.std.vector('float')()
 pmt_layer = ROOT.std.vector('int')()
 
 # Variables to hold event-level data
-eventID = ROOT.std.vector('int')()
-runNumber = ROOT.std.vector('int')()
+
+#eventID = ROOT.std.vector('int')()
+#runNumber = ROOT.std.vector('int')()
+
+event = array.array('i', [0])  # 'i' is for integer type
+runNumber = array.array('i', [0])
+
 
 # Create the branches in the new tree
 # want only the following branches with the following names:
@@ -288,7 +296,8 @@ runNumber = ROOT.std.vector('int')()
 # scintillator-level parameters are nPE, time, layer, chan
 
 # Create the branches in the new tree
-create_branches_event(output_tree, eventID, runNumber)
+#create_branches_event(output_tree, eventID, runNumber)
+create_branches_event(output_tree, event, runNumber)
 create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time)
 create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer)
 
@@ -298,7 +307,7 @@ for i in range(n_entries):
     input_tree.GetEntry(i)
 
     # Populate the vectors with flattened data
-    populate_vectors_event(input_tree, eventID, runNumber)
+    populate_vectors_event(input_tree, event, runNumber)
     populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time)
     populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer)
     
