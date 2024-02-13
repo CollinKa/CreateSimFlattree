@@ -95,7 +95,7 @@ cali =[9.7,8.4,5.0,3.6,8.2,8.2,6.8,4.6,8.7,7.1,6.4,7.5,8.7,11.8,9.7,8.1,8.6,9.1,
 
 
 # Function to populate the vectors in the flattened tree for ScintHits
-def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time):
+def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type):
     # Clear the vectors
     scint_copyNo.clear()
     scint_layer.clear()
@@ -188,7 +188,7 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
             elif(j == 81 or j == 82 or j ==  83):
                 scint_layer.push_back(2)
                 scint_type.push_back(int(2))
-                if j === 81: 
+                if j == 81: 
                     scint_row.push_back(int(4))
                     scint_column.push_back(int(0))
                 if j == 82:
@@ -209,20 +209,20 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
                         scint_row.push_back(int(0))
                     else:
                         scint_row.push_back(int(1)) 
-                if SMnumber <=1 :
+                if SMnum <=1 :
                     if int(barNumber/2) == 1:
                         scint_row.push_back(int(2))
                     else:
                         scint_row.push_back(int(3))
                 
                 
-                if (SMnumber % 2 == 0):
+                if (SMnum % 2 == 0):
                     if barNumber % 2 == 0:
                         scint_column.push_back(int(0))
                     else:
                         scint_column.push_back(int(1))
                 
-                if (SMnumber % 2 == 1):                   
+                if (SMnum % 2 == 1):                   
                     if barNumber % 2 == 0:
                         scint_column.push_back(int(2))
                     else:
@@ -230,23 +230,27 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
 
                
 # Function to create the branches in the new tree for ScintHits
-def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time):
+def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type):
     # Create the branch for the flattened data
     output_tree.Branch("chan", scint_copyNo)
     output_tree.Branch("layer", scint_layer)
     output_tree.Branch("nPE", scint_nPE)
     output_tree.Branch("time", scint_time)
     output_tree.Branch("row", scint_row)
+    output_tree.Branch("column", scint_column)
     output_tree.Branch("type",scint_type)
 
 
 # Function to create the branches in the new tree for PMTHits
-def create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
+def create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type):
     # Create the branch for the flattened data
     output_tree.Branch("pmt_nPE", pmt_nPE)
     output_tree.Branch("pmt_chan", pmt_copyNo)
     output_tree.Branch("pmt_time", pmt_time)
     output_tree.Branch("pmt_layer", pmt_layer)
+    output_tree.Branch("pmt_row", pmt_row)
+    output_tree.Branch("pmt_column", pmt_column)
+    output_tree.Branch("pmt_type",pmt_type)
 
 def create_branches_event(output_tree, event, runNumber):
     output_tree.Branch("event", event,"event/I")
@@ -262,12 +266,15 @@ def populate_vectors_event(input_tree, event, runNumber, fileNum):
     #runNumber.push_back(1)
     runNumber[0] = fileNum
 
-def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
+def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type):
+
     pmt_nPE.clear()
     pmt_copyNo.clear()
     pmt_time.clear()
     pmt_layer.clear()
-    pmt_
+    pmt_row.clear()
+    pmt_column.clear()
+    pmt_type.clear()
     # make an array of length 1000 to store temporary nPE values
     temp_nPE = [0]*1000
     temp_time = [0]*1000
@@ -295,16 +302,73 @@ def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer):
             pmt_time.push_back(temp_time[j])
             dataChan = simToDataPMT(j)
             pmt_copyNo.push_back(int(dataChan))
-            if(j == 97):
+            if(j == 97 or j == 99):
                 pmt_layer.push_back(-1)
-            elif(j == 96):
+                pmt_type.push_back(int(1))
+                pmt_row.push_back(int(0))
+                pmt_column.push_back(int(0))
+            elif(j == 96 or j == 98):
                 pmt_layer.push_back(4)
+                pmt_type.push_back(int(1))
+                pmt_row.push_back(int(0))
+                pmt_column.push_back(int(0))
             elif(j == 77 or j == 78 or j == 79):
                 pmt_layer.push_back(0)
+                scint_type.push_back(int(2))
+                if  j == 77: 
+                    pmt_row.push_back(int(4))
+                    pmt_column.push_back(int(0))
+                elif j == 78:
+                    pmt_row.push_back(int(0))
+                    pmt_column.push_back(int(-1))
+                else j == 79:
+                    pmt_row.push_back(int(0))
+                    pmt_column.push_back(int(4))
+                
             elif(j == 81 or j == 82 or j == 83):
                 pmt_layer.push_back(2)
+                pmt_type.push_back(int(2))
+                if j == 81: 
+                    pmt_row.push_back(int(4))
+                    pmt_column.push_back(int(0))
+                if j == 82:
+                    pmt_row.push_back(int(0))
+                    pmt_column.push_back(int(-1))
+                else:
+                    pmt_column.push_back(int(4)) 
+                    pmt_row.push_back(int(0))
+
+
             else:
                 pmt_layer.push_back(int(j/216))
+                pmt_type.push_back(int(0))
+                layerNum = dataChan/16
+                #find the super module number(SMnum)
+                SMnum=int((dataChan-16*(layerNum))/4)
+                barNumber = (dataChan-16*(layerNum))-4*SMnum
+                if SMnum > 1:
+                    if int(barNumber/2) == 1:
+                        pmt_row.push_back(int(0))
+                    else:
+                        pmt_row.push_back(int(1)) 
+                if SMnum <=1 :
+                    if int(barNumber/2) == 1:
+                        pmt_row.push_back(int(2))
+                    else:
+                        pmt_row.push_back(int(3))
+                
+                
+                if (SMnum % 2 == 0):
+                    if barNumber % 2 == 0:
+                        pmt_column.push_back(int(0))
+                    else:
+                        pmt_column.push_back(int(1))
+                
+                if (SMnum % 2 == 1):                   
+                    if barNumber % 2 == 0:
+                        pmt_column.push_back(int(2))
+                    else:
+                        pmt_column.push_back(int(3))
             
 ##################################################################################################################
 # Main script
@@ -346,6 +410,9 @@ pmt_nPE = ROOT.std.vector('float')()
 pmt_copyNo = ROOT.std.vector('int')()
 pmt_time = ROOT.std.vector('float')()
 pmt_layer = ROOT.std.vector('int')()
+pmt_type = ROOT.std.vector('int')()
+pmt_row = ROOT.std.vector('int')()
+pmt_column = ROOT.std.vector('int')()
 
 # Variables to hold event-level data
 
@@ -372,8 +439,8 @@ runNumber = array.array('i', [0])
 # Create the branches in the new tree
 #create_branches_event(output_tree, eventID, runNumber)
 create_branches_event(output_tree, event, runNumber)
-create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time)
-create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer)
+create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type)
+create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type)
 
 # Loop over entries in the input tree
 n_entries = input_tree.GetEntries()
@@ -382,8 +449,8 @@ for i in range(n_entries):
 
     # Populate the vectors with flattened data
     populate_vectors_event(input_tree, event, runNumber,fileNumber)
-    populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time)
-    populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer)
+    populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type)
+    populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type)
     
     # Fill the new tree with the flattened data
     output_tree.Fill()
