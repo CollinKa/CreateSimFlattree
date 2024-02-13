@@ -177,10 +177,10 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
                 if j == 73:
                     scint_row.push_back(int(4))
                     scint_column.push_back(int(0))
-                if j == 74:
+                elif j == 74:
                     scint_row.push_back(int(0))
                     scint_column.push_back(int(-1))
-                if j == 75:
+                else:
                     scint_row.push_back(int(0))
                     scint_column.push_back(int(4))
                     
@@ -191,7 +191,7 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
                 if j == 81: 
                     scint_row.push_back(int(4))
                     scint_column.push_back(int(0))
-                if j == 82:
+                elif j == 82:
                     scint_row.push_back(int(0))
                     scint_column.push_back(int(-1))
                 else:
@@ -321,7 +321,7 @@ def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pm
                 elif j == 78:
                     pmt_row.push_back(int(0))
                     pmt_column.push_back(int(-1))
-                else j == 79:
+                else:
                     pmt_row.push_back(int(0))
                     pmt_column.push_back(int(4))
                 
@@ -331,7 +331,7 @@ def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pm
                 if j == 81: 
                     pmt_row.push_back(int(4))
                     pmt_column.push_back(int(0))
-                if j == 82:
+                elif j == 82:
                     pmt_row.push_back(int(0))
                     pmt_column.push_back(int(-1))
                 else:
