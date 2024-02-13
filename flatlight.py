@@ -234,6 +234,9 @@ scint_copyNo = ROOT.std.vector('int')()
 scint_layer = ROOT.std.vector('int')()
 scint_nPE = ROOT.std.vector('float')()
 scint_time = ROOT.std.vector('float')()
+scint_type = ROOT.std.vector('int')()
+scint_row = ROOT.std.vector('int')()
+scint_column = ROOT.std.vector('int')()
 
 # Variables to hold event-level data
 event = array.array('i', [0])  # 'i' is for integer type
