@@ -200,7 +200,7 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
             else:
                 scint_layer.push_back(int(j/216))
                 scint_type.push_back(int(0))
-                layerNum = dataChan/16
+                layerNum = int(dataChan/16)
                 #find the super module number(SMnum)
                 SMnum=int((dataChan-16*(layerNum))/4)
                 barNumber = (dataChan-16*(layerNum))-4*SMnum
@@ -342,7 +342,7 @@ def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pm
             else:
                 pmt_layer.push_back(int(j/216))
                 pmt_type.push_back(int(0))
-                layerNum = dataChan/16
+                layerNum = int(dataChan/16)
                 #find the super module number(SMnum)
                 SMnum=int((dataChan-16*(layerNum))/4)
                 barNumber = (dataChan-16*(layerNum))-4*SMnum
