@@ -314,7 +314,7 @@ def populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pm
                 pmt_column.push_back(int(0))
             elif(j == 77 or j == 78 or j == 79):
                 pmt_layer.push_back(0)
-                scint_type.push_back(int(2))
+                pmt_type.push_back(int(2))
                 if  j == 77: 
                     pmt_row.push_back(int(4))
                     pmt_column.push_back(int(0))
