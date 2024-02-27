@@ -52,7 +52,7 @@ cali =[9.7,8.4,5.0,3.6,8.2,8.2,6.8,4.6,8.7,7.1,6.4,7.5,8.7,11.8,9.7,8.1,8.6,9.1,
     
 
 # Function to populate the vectors in the flattened tree for ScintHits
-def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type):
+def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit):
     # Clear the vectors
     scint_copyNo.clear()
     scint_layer.clear()
@@ -61,10 +61,12 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
     scint_row.clear()
     scint_column.clear()
     scint_type.clear()
-    #FIXME:row,column,type unfinished
+    scint_muonHit.clear()
     # make an array of length 1000 to store temporary nPE values
     temp_nPE = [0]*1000
     temp_time = [0]*1000
+    #check if the current channel got hit by muons. 1 for get muon hit and 0 for not geting muon hit.
+    Muon_Chan = [0]*1000
 
     # Populate the vectors with flattened data
     for j in range(input_tree.ScintRHits.size()):
@@ -105,15 +107,24 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
 
         temp_nPE[tempCopyNo] = temp_nPE[tempCopyNo] + edep*nPEPerMeV
 
+
+        #Get the particle(PDG number) that hit the specific channel
+        PNum=hit.GetParticleName()
+        if abs(PNum) == 13:
+            Muon_Chan[tempCopyNo] = 1
+
+
+
         # if the hit time in the channel is lower than the current time, replace the current time with the new time
         if(temp_time[tempCopyNo] == 0 or hit.GetHitTime() < temp_time[tempCopyNo]):
             temp_time[tempCopyNo] = hit.GetHitTime()
 
     # loop over the temporary arrays and add the values to the vectors
     for j in range(1000):
-        # only save values where the nPE is greater than 0t
+        # only save values where the nPE is greater than 0
         #if(temp_nPE[j] > 0):
         if(temp_nPE[j] != 0):
+            scint_muonHit.push_back(Muon_Chan[j])
             scint_nPE.push_back(temp_nPE[j])
             scint_time.push_back(temp_time[j])
             dataChan = simToDataScint(j)
@@ -186,7 +197,7 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
                         scint_column.push_back(int(3))
 
 # Function to create the branches in the new tree for ScintHits
-def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type):
+def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit):
     # Create the branch for the flattened data
     output_tree.Branch("chan", scint_copyNo)
     output_tree.Branch("layer", scint_layer)
@@ -195,6 +206,7 @@ def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, sci
     output_tree.Branch("row", scint_row)
     output_tree.Branch("column", scint_column)
     output_tree.Branch("type",scint_type)
+    output_tree.Branch("muonHit",scint_muonHit)
 
 def create_branches_event(output_tree, event, runNumber):
     output_tree.Branch("event", event, "event/I")
@@ -237,6 +249,7 @@ scint_time = ROOT.std.vector('float')()
 scint_type = ROOT.std.vector('int')()
 scint_row = ROOT.std.vector('int')()
 scint_column = ROOT.std.vector('int')()
+scint_muonHit = ROOT.std.vector('int')()
 
 # Variables to hold event-level data
 event = array.array('i', [0])  # 'i' is for integer type
@@ -257,7 +270,7 @@ runNumber = array.array('i', [0])
 
 # Create the branches in the new tree
 create_branches_event(output_tree, event, runNumber)
-create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type)
+create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit)
 
 # Loop over entries in the input tree
 n_entries = input_tree.GetEntries()
@@ -266,7 +279,7 @@ for i in range(n_entries):
 
     # Populate the vectors with flattened data
     populate_vectors_event(input_tree, event, runNumber,fileNumber)
-    populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type)
+    populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit)
     
     # Fill the new tree with the flattened data
     output_tree.Fill()
