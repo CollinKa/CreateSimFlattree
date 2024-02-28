@@ -239,6 +239,16 @@ def populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, sci
                     else:
                         scint_column.push_back(int(3))
 
+# Function to create the branches in the new tree for PMTHits
+def create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type):
+    # Create the branch for the flattened data
+    output_tree.Branch("pmt_nPE", pmt_nPE)
+    output_tree.Branch("pmt_chan", pmt_copyNo)
+    output_tree.Branch("pmt_time", pmt_time)
+    output_tree.Branch("pmt_layer", pmt_layer)
+    output_tree.Branch("pmt_row", pmt_row)
+    output_tree.Branch("pmt_column", pmt_column)
+    output_tree.Branch("pmt_type",pmt_type)
                
 # Function to create the branches in the new tree for ScintHits
 def create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit):
@@ -440,6 +450,7 @@ runNumber = array.array('i', [0])
 # Create the branches in the new tree
 #create_branches_event(output_tree, eventID, runNumber)
 create_branches_event(output_tree, event, runNumber)
+create_branches_pmt(output_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type)
 create_branches_scint(output_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit)
 
 # Loop over entries in the input tree
@@ -449,6 +460,7 @@ for i in range(n_entries):
 
     # Populate the vectors with flattened data
     populate_vectors_event(input_tree, event, runNumber,fileNumber)
+    populate_vectors_pmt(input_tree, pmt_nPE, pmt_copyNo, pmt_time, pmt_layer,pmt_row,pmt_column,pmt_type)
     populate_vectors_scint(input_tree, scint_copyNo, scint_layer, scint_nPE, scint_time,scint_row,scint_column,scint_type,scint_muonHit)
     
     # Fill the new tree with the flattened data
