@@ -220,7 +220,7 @@ def populate_vectors_event(input_tree, event, runNumber,fileNumber):
 ##################################################################################################################
 # Main script
 # Load the custom dictionary
-if ROOT.gSystem.Load("/net/cms26/cms26r0/zheng/barSimulation/WithPhotonUpdateSim/milliQanSim/build/libMilliQanCore.so") < 0:
+if ROOT.gSystem.Load("/net/cms18/cms18r0/cms26r0/zheng/barsim/milliQanSim/build/libMilliQanCore.so") < 0:
     raise Exception("Failed to load custom dictionary.")
 
 # Open the input ROOT file specified in the first argument
